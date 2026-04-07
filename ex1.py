@@ -27,9 +27,10 @@ def func(x, w, U, b1, b2):
 def main(): 
     l = np.empty(epochs)
     for epoch in range(4):
+        f = np.empty(4)
         dL_df = np.empty(4)
         for i, x in enumerate(x_arr):
-            f = func(x, w, u, b1, b2)
+            f[i] = func(x, w, u, b1, b2)
             dL_df[i] = -2 * (y-f)
         l[epoch] = sum((y - f) ** 2)
 
