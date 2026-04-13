@@ -1,40 +1,80 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-epochs = 100
-lr = 0.01
-
-x_arr = np.array([
-    [0,0],
-    [0,1],
-    [1,0],
-    [1,1]
-])
-y = np.array([-1, 1, 1, -1])
-
-w = np.randn(2)
-u = np.randn(2, 2)
-b1 = np.randn(2)
-b2 = np.randn()
-
-
+#ReLU implementation
 def ReLU(num):
     return np.maximum(num,0)
 
+#function to be learned
 def func(x, w, U, b1, b2):
     h = ReLU(U.T @ x + b1)
     return w @ h + b2
 
 def main(): 
-    l = np.empty(epochs)
-    for epoch in range(4):
-        f = np.empty(4)
-        dL_df = np.empty(4)
-        for i, x in enumerate(x_arr):
-            f[i] = func(x, w, u, b1, b2)
-            dL_df[i] = -2 * (y-f)
-        l[epoch] = sum((y - f) ** 2)
+    epochs = 100
+    lr = 0.01
 
+    x = np.array([
+        [0,0],
+        [0,1],
+        [1,0],
+        [1,1]
+    ])
+    y = np.array([-1, 1, 1, -1])
+
+    w = np.random.randn(2)
+    u = np.random.randn(2, 2)
+    b1 = np.random.randn(2)
+    b2 = np.random.randn()
+
+    data_len = len(x)
+    l = np.empty(epochs)
+    #iterate over epochs
+    for epoch in range(epochs):
         
+        #batch-calculate function and appropriate loss
+        h = np.array([ReLU(u.T @ x_i + b1) for x_i in x])
+        f = np.array([w @ h[i] + b2 for i in range(data_len)])
+        l[epoch] = np.sum((y - f) ** 2)
+        
+        #batch-calculate dl_df
+        dl_df = -2 * (y-f)
+
+        #batch-calculate dl_db2 = dl_df * df_db2 = dl_df * 1
+        dl_db2 = dl_df.copy()
+        b2_step = lr * np.sum(dl_db2)
+
+        #batch-calculate dl_dw = dl_df * df_dw
+        dl_dw = np.array([dl_df[i] * h[i] for i in range(data_len)])
+        w_step = lr * np.sum(dl_dw, axis=0)
+
+        #where z = U.T * x + b1, h = ReLU(z), calculate dl_dz = dl_dh * dh_dz  
+        dl_dh = np.array([dl_df[i] * w for i in range(data_len)])
+        dh_dz = (h > 0).astype(float) #returns an indicator vector where positive values have derivative 1, otherwise - 0
+        dl_dz = dl_dh * dh_dz
+        
+        # batch calculate dl_db1 = dl_dz * dz_db1 = dl_dz
+        dl_db1 = dl_dz
+        b1_step = lr * np.sum(dl_db1, axis=0)
+
+        #this trick calculates the gradiant matrix, taking into account that xn multiplies row n of u and each row of w multiplies each column of u
+        #using matrix multiplication from all samples to all targets (2,4)X(4, 2) yields the sum of entire batch
+        u_step = lr * x.T @ dl_dz
+
+        w -= w_step
+        u -= u_step
+        b1 -= b1_step
+        b2 -= b2_step
+
+    plt.subplot(2,3,1)
+    plt.plot(range(epochs), l)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Loss V Epochs')    
+
+    
+    plt.show()
+    
 
 if __name__ == "__main__":
     main()
