@@ -11,9 +11,12 @@ def func(x, w, U, b1, b2):
     return w @ h + b2
 
 def main(): 
-    epochs = 100
+
+    #batch learning parameters
+    epochs = 500
     lr = 0.01
 
+    #labeled data
     x = np.array([
         [0,0],
         [0,1],
@@ -22,6 +25,7 @@ def main():
     ])
     y = np.array([-1, 1, 1, -1])
 
+    #define parameters to be learned
     w = np.random.randn(2)
     u = np.random.randn(2, 2)
     b1 = np.random.randn(2)
@@ -29,6 +33,7 @@ def main():
 
     data_len = len(x)
     
+    #data for iteration plots
     l_ep = np.empty(epochs)
     w_ep = np.empty((epochs, len(w)))
     b2_ep = np.empty(epochs)
@@ -64,16 +69,18 @@ def main():
         #using matrix multiplication from all samples to all targets (2,4)X(4, 2) yields the sum of entire batch
         u_step = lr * x.T @ dl_dz
 
+        #gradient steps
         w -= w_step
         u -= u_step
         b1 -= b1_step
         b2 -= b2_step
 
-        
+        #update plot data
         l_ep[epoch] = np.sum((y - f) ** 2)
         w_ep[epoch] = w
         b2_ep[epoch] = b2
 
+    #plot data
     plt.subplot(2,2,1)
     plt.plot(range(epochs), l_ep)
     plt.xlabel('Epoch')
