@@ -28,14 +28,17 @@ def main():
     b2 = np.random.randn()
 
     data_len = len(x)
-    l = np.empty(epochs)
+    
+    l_ep = np.empty(epochs)
+    w_ep = np.empty((epochs, len(w)))
+    b2_ep = np.empty(epochs)
+    
     #iterate over epochs
     for epoch in range(epochs):
         
         #batch-calculate function and appropriate loss
         h = np.array([ReLU(u.T @ x_i + b1) for x_i in x])
         f = np.array([w @ h[i] + b2 for i in range(data_len)])
-        l[epoch] = np.sum((y - f) ** 2)
         
         #batch-calculate dl_df
         dl_df = -2 * (y-f)
@@ -66,12 +69,34 @@ def main():
         b1 -= b1_step
         b2 -= b2_step
 
-    plt.subplot(2,3,1)
-    plt.plot(range(epochs), l)
+        
+        l_ep[epoch] = np.sum((y - f) ** 2)
+        w_ep[epoch] = w
+        b2_ep[epoch] = b2
+
+    plt.subplot(2,2,1)
+    plt.plot(range(epochs), l_ep)
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title('Loss V Epochs')    
 
+    plt.subplot(2,2,2)
+    plt.plot(range(epochs), w_ep[:,0])
+    plt.xlabel('Epoch')
+    plt.ylabel('w[0]')
+    plt.title('w[0] V Epochs')
+
+    plt.subplot(2,2,3)
+    plt.plot(range(epochs), w_ep[:,1])
+    plt.xlabel('Epoch')
+    plt.ylabel('w[1]')
+    plt.title('w[1] V Epochs')
+
+    plt.subplot(2,2,4)
+    plt.plot(range(epochs), b2_ep)
+    plt.xlabel('Epoch')
+    plt.ylabel('b2')
+    plt.title('b2 V Epochs')
     
     plt.show()
     
