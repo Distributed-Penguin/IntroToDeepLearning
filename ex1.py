@@ -6,9 +6,10 @@ def ReLU(num):
     return np.maximum(num,0)
 
 #function to be learned
-def func(x, w, U, b1, b2):
-    h = ReLU(U.T @ x + b1)
-    return w @ h + b2
+def func(x, w, u, b1, b2):
+    h = ReLU(x @ u + b1)
+    f = h @ w + b2
+    return h, f
 
 def main(): 
 
@@ -42,8 +43,7 @@ def main():
     for epoch in range(epochs):
         
         #batch-calculate function and appropriate loss
-        h = np.array([ReLU(u.T @ x_i + b1) for x_i in x])
-        f = np.array([w @ h[i] + b2 for i in range(data_len)])
+        h, f = func(x, w, u, b1, b2)
         
         #batch-calculate dl_df
         dl_df = -2 * (y-f)
