@@ -108,8 +108,6 @@ def batch_grad_step(x, y, w, u, b1, b2, lr):
         
     #batch-calculate function and appropriate loss
     h, f = func(x, w, u, b1, b2)
-    #h = np.array([ReLU(u.T @ x_i + b1) for x_i in x])
-    #f = np.array([w @ h[i] + b2 for i in range(data_len)])
     loss = np.sum((y - f) ** 2)
     #batch-calculate dl_df
     dl_df = -2 * (y-f)
