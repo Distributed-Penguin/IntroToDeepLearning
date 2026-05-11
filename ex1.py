@@ -1,11 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#function model to be learned
-def func(x, w, u, b1, b2):
-    h = ReLU(x @ u + b1)
-    f = h @ w + b2
-    return h, f
 
 def main():    
     #training data
@@ -34,8 +29,8 @@ def main():
     mini_batch_learner(data, w.copy(), u.copy(), b1.copy(), b2, m_batch_epochs, m_batch_lr, m_batch_size)
     
     #SGD experiment
-    SGD_epochs = 5000
-    SGD_lr = 0.001
+    SGD_epochs = 1250
+    SGD_lr = 0.01
     SGD_learner(data, w.copy(), u.copy(), b1.copy(), b2, SGD_epochs, SGD_lr)
 
 
@@ -139,6 +134,12 @@ def batch_grad_step(x, y, w, u, b1, b2, lr):
     b1 -= b1_step
     b2 -= b2_step
     return w, u, b1, b2, loss
+
+#function model to be learned
+def func(x, w, u, b1, b2):
+    h = ReLU(x @ u + b1)
+    f = h @ w + b2
+    return h, f
 
 #ReLU implementation
 def ReLU(num):
